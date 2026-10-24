@@ -16,7 +16,10 @@ export default defineConfig({
   reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : "list",
   use: {
     baseURL,
-    trace: "on-first-retry",
+    // Traces record request cookies, and CI uploads the report as a public
+    // artifact: no traces while the bypass cookie is in use.
+    trace: bypass ? "off" : "on-first-retry",
+    screenshot: "only-on-failure",
     storageState: bypass ? BYPASS_STATE : undefined,
   },
   projects: [{ name: "iphone", use: { ...devices["iPhone 16"] } }],
