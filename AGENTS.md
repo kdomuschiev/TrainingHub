@@ -90,6 +90,8 @@ Do without asking:
 - Run AI review on the PR and fix findings before calling the owner.
 - Write DB migrations; apply them to local and preview databases.
 - Low-tier PR (per `REVIEW.md`) green: enable auto-merge.
+- After `gh pr view` shows your PR merged:
+  `git switch main && git pull --prune`.
 
 Ask first:
 - Adding or upgrading a dependency.
@@ -97,10 +99,11 @@ Ask first:
 - Applying a migration to production.
 - Anything outward-facing (creating repos, accounts, integrations).
 
-Never without an explicit yes: force-push, deleting branches,
-touching files outside the repo, anything involving secrets.
+Never without an explicit yes: force-push, touching files
+outside the repo, anything involving secrets.
 
-Never: push to `main`, deploy manually, merge a medium/high PR.
+Never: push to `main`, deploy manually, merge a medium/high PR,
+delete a branch (GitHub deletes merged branches).
 
 ## Reports
 

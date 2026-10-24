@@ -221,6 +221,9 @@ Owner's choice. Accepted risk: data older than the free-tier restore window cann
 **D46 — One progress file per spec in `tasks/`, replacing `TASKS.md`.** (spec 000, T9 follow-up)
 `tasks/<nnn>-<name>.md` mirrors `specs/<nnn>-<name>.md`; the current file has the branch's spec number; merged specs' files stay unchanged. Parallel specs (004 ∥ 005, D20) never edit the same file, and each spec's evidence and review findings stay in the repo for the retrospective (D28). Rejected: one `TASKS.md` replaced per spec (conflicts between parallel worktrees, evidence only in merged PR bodies); a `-spec`/`-task` suffix (the folder already says it, and it would break D36's file names).
 
+**D47 — Agents never delete branches; GitHub deletes head branches on merge.** (after spec 000, owner instruction, Q35/Q38)
+The repo setting `delete_branch_on_merge` is on, so merged branches leave GitHub without any agent action. After a merge the agent only runs `git switch main && git pull --prune`. Supersedes the "delete branches" part of D22's "never without an explicit yes" row: deleting a branch is now never. Merged local branches stay on the owner's machine; they are harmless.
+
 ## Open questions (decided in the named spec's interview)
 
 | Topic | Spec |
