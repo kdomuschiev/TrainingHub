@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { checkHealth } from "./health";
 
 describe("checkHealth", () => {
@@ -12,5 +12,13 @@ describe("checkHealth", () => {
       throw new Error("connection refused");
     });
     expect(health).toEqual({ status: "error", database: "unreachable" });
+  });
+
+  it("logs only the message when the database ping fails", async () => {
+    const logFailure = vi.fn();
+    await checkHealth(async () => {
+      throw new Error("connection refused");
+    }, logFailure);
+    expect(logFailure).toHaveBeenCalledWith("connection refused");
   });
 });

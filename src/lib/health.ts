@@ -5,6 +5,7 @@ export type Health = {
 
 export async function checkHealth(
   pingDatabase: () => Promise<unknown>,
+  logFailure: (message: string) => void = () => {},
 ): Promise<Health> {
   try {
     await pingDatabase();
