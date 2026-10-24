@@ -1,0 +1,72 @@
+# Spec 000 progress
+
+Every "done" needs evidence (command output, commit hash, link).
+
+## Spec 000 — Foundation
+
+| Task | Status | Evidence / next action |
+|---|---|---|
+| T1 Interview: `AGENTS.md` and `CLAUDE.md` | done | Interview 2026-10-24, Q1–Q13: every section approved by the owner (Q12 edited: advisor at effort medium; Q13 shortened). Full read approved, plus branch types added to Git. Committed as the first commit on `main` `2ecfe05`. |
+| T2 Git and GitHub | done | Repo https://github.com/kdomuschiev/TrainingHub. Private Free plan blocked protection (HTTP 403); owner chose public (D30 updated, `0c16426`). Commit authors rewritten to the GitHub noreply address before going public (owner approved one force-push). Verified via `gh api` (output in PR #1): public; merge commit only; auto-merge on; `main` protected: PR required (0 approvals, solo owner), admins included, force-push and deletion blocked, 7 required checks (added in T7). |
+| T3 Next.js scaffold | done | Next.js 16.4.3 via create-next-app (TS strict, ESLint, App Router, `src/`), defaults only. Commit `b651ddf`. `npm run lint`, `npm run typecheck`, `npm run build` pass; `next start` serves `/` with 200, `lang="bg"` and the Bulgarian placeholder. Tailwind and Geist font left out (spec 001 decides styling). |
+| T4 Test toolchain | done (integration layer empty until T5) | Owner approved `vitest` 5.0.5, `@playwright/test` 1.64.1 and `@types/node` ^24. Claude API guard built red/green: `f482d66` (red: request reached api.anthropic.com, 401) → `36a775a` (green, test untouched). Playwright iPhone 16/WebKit + Postgres 17 on :5433: `b407497`. Local runs: lint ok, typecheck ok, `npm test` 2 passed, `test:e2e` 1 passed, `test:integration` no files yet (`--passWithNoTests`, removed in T5 `e628070`). |
+| T5 Database | done locally; Neon pending | Owner chose Drizzle + drizzle-kit with `pg` everywhere. Red/green pairs: `5d6d248`→`723696c` (checkHealth, unit), `e628070`→`9e2a9b9` (pingDatabase vs real Postgres, integration), `0885dbd`→`22eabf6` (`GET /api/health`, E2E; red was 404). Local: lint, typecheck ok; unit 4 passed; integration 2 passed; E2E 2 passed; build lists `ƒ /api/health` (dynamic). Manual: bad DATABASE_URL → `503 {"status":"error","database":"unreachable"}`, `cache-control: no-store`. **Next:** owner creates the Neon project (Frankfurt, Postgres 17); checked against Neon in T6. |
+| T6 Vercel | done (production checks after merge) | D41–D43 recorded (`02ac1c6`). Sentry code `7971105` (not yet verified with a real event). Owner: Neon project, Vercel import, Neon↔Vercel integration, Sentry project + Production env vars done. Draft PR #1 opened. First preview canceled by the Vercel API (likely the Neon integration); redeploy failed with `STATIC_BUILD_NO_OUT_DIR` because the project was imported as a static site; fixed by `vercel.json` framework `nextjs` + Node `24.x` (`2ce12f1`). Preview build succeeded: https://traininghub-git-feat-s000-foundation-kdomuschievs-projects.vercel.app (behind Vercel Deployment Protection, 302 to SSO). Owner verified in the browser (2026-10-24): preview home page and `/api/health` → `{"status":"ok","database":"reachable"}` against the Neon preview branch. Sentry org is on a 14-day Business trial; it falls back to the free Developer plan by itself (Sentry pricing docs), so don't confirm a paid plan. Owner set `VERCEL_AUTOMATION_BYPASS_SECRET` and `NEON_API_KEY` GitHub secrets. Remaining: production URL and a Sentry test event, both only after merge. |
+| T7 CI (GitHub Actions) | done | `.github/workflows/ci.yml` (`aa35d39`). Run 40096948093 all green: Lint, Typecheck, Unit tests, Wait for Vercel preview, Integration tests (2 passed against Neon `preview/feat/s000-foundation` via neonctl 8.11.1), E2E tests (2 passed against the preview URL through the protection bypass). Required checks on `main`: those 6 jobs (GitHub Actions app) + `Vercel` (strict). The preview job is required too because GitHub treats skipped jobs as passing. PR #1 merge state `CLEAN`. |
+| T8 Interview: hooks, review subagents, `REVIEW.md`, `/learn` | done (owner decisions pending, see below) | Interview 2026-10-24, Q1–Q6 approved as proposed (Q1 REVIEW.md; Q2 two hook layers + `.githooks/` in High; Q3 `TODO(S<nnn>):` format; Q4 task-review; Q5 observer; Q6 `/learn`). Commit checks built red/green: `43c3343`→`405ae75` (skip/only), `dd95093`→`6c28378` (deleted/shrinking tests), `4094ac2`→`b041be7` (TODOs), `88aff78`→`7998900` (`.github/` tier), plus review fixes `8058ad9`→`8d10e32` (word "fit"), `3a3f221`→`e9e3a1e` (`git -C … commit -n`), `d49a2e5`→`cc5a6b9` (diff parsing). Wiring: pre-commit `97c72ee`/`88d16a6`, Claude hooks `00d4019`/`ae0b034`, agents `7ff710b`, REVIEW.md `467abf0`, `/learn` + LEARNINGS.md `52450fb`. Unit 43 passed, lint and typecheck clean. Done means #6 demonstrated (each commit rejected, exit 1): `.skip`, `.only`, deleted `src/lib/health.test.ts`, test removed from it ("2 tests before, 1 now"), bare TODO, `.github/` change on detached HEAD. The pre-Bash hook also blocked my own commands containing the patterns, and post-edit fed back the red test failure. Both subagents ran over T3–T8 (findings below). The agent types load only in a new session, so this session ran them as general-purpose agents on Sonnet 5.5 at effort low, following the definition files verbatim. |
+| T9 Interview: `/spec` skill | done | Interview 2026-10-24 using `writing-for-agents`, Q1–Q8 (frontmatter, read + branch, interview, UI section, write spec, mockup, review loop, finish) approved as proposed; full read added Q9 (pad the number to three digits) and Q10 (`git grep` for deferred TODOs), Q11 full file approved. Skill `.claude/skills/spec/SKILL.md` committed `0544cdb`; D45 `ae1d3f0`; progress files per spec (D46, Q14–Q20) `ba938db`. Covers D34 (read context, one question at a time with a recommendation, fresh session at the end) and D36 (mockup with every state, spec and mockup updated together, frozen after approval). First real run: `/spec 001` in a new session. |
+| T10 PR and review | done (owner merge pending) | `/code-review` (medium, `main...HEAD`): 10 findings; fixed #5 health failures now logged (red/green `915d77c`→`9009f9b`) and #7 drizzle-kit loads `.env.local` (`c074dab`, verified `db:generate` with no env set). `/security-review`: one candidate (bypass cookie in the public Playwright report artifact), false-positive filter 3/10, below the report bar; no findings. Owner approved Q22–Q26 (2026-10-24): fixed #1 `9ad61d5`→`5d8cf98`, #2 `2092cb8`→`0b98db0`, #3 `f1c37e3`→`6aa859e`, #6 `7d20514` + `2501be1`, security hardening `40992f9`. Unit 55 passed, lint clean. **Next:** owner's next-day read and merge; then production URL, `/api/health` and a Sentry test event (T6, Done means #4). |
+
+## Review findings from T8 (task-review + observer over T3–T8)
+
+Fixed: T8 task-review: the word "fit" was rejected as a focused test; `git -C … commit -n` slipped past the bypass block; added lines that start with `++` and quoted paths broke the diff parsing; ESLint warned on ignored files; null output on timeout. T3 `cacheComponents`/`partialPrefetching` were questioned, but they are `create-next-app` defaults (`node_modules/next/dist/docs/01-app/01-getting-started/08-caching.md:20`).
+
+Observer findings (recorded, not fixed):
+- T4: the red commit `f482d66` reached api.anthropic.com for real (401, no key sent). The guard covers only global `fetch` in Vitest.
+- T4–T7: settled but unrecorded: iPhone 16/WebKit, Postgres 17 on :5433, 5 s connect timeout, 503 + no-store, `{status, database}` shape, Sentry `tracesSampleRate: 0`/`sendDefaultPii: false`, Node `24.x`, polling the Vercel status, preview URL derived from the branch name (Vercel hostnames max 63 characters, which limits branch-name length).
+- T6: "done" while the production URL and a Sentry event remain (stated in the row).
+- T7: the evidence commit `d9da214` also edited the T2 and T6 rows.
+- T8: `prepare` uses `|| true` (so `npm install` doesn't fail where there's no `.git`, e.g. Vercel builds); `.github/` is rejected on `hotfix/` branches; `specTiers` falls back to PRODUCT.md. Hook glue scripts (`pre-commit.mjs`, `post-edit.mjs`, `pre-bash.mjs`) are I/O wiring under the configuration exception; their logic lives in the tested `checks.mjs` and `bypass.mjs`.
+- Observer T5: a symlinked `node_modules` breaks Turbopack in the throwaway worktree; it re-ran the E2E red with a copied `node_modules`.
+- Observer T3 claimed the commit trailer should say Sonnet 5.5. That's wrong: the session runs Opus 5.5.
+
+Owner decisions on the unfixed findings (2026-10-24, Q1–Q4, all approved):
+- Q1: pg pool `error` listener and 5 s query timeout, red/green `37c9991`→`b1b2af4`, `3cd844b`→`e720883`. Task review on it found the default log printed the raw error (client + password): fixed `edb5904`→`4d7f7f3`. Observer: both pairs red on assertions, tests untouched. Integration 5 passed.
+- Q2: Vercel bypass secret traded for a preview-only cookie in a Playwright global setup (`87d5c47`). CI run 40116586204 all green; E2E 2 passed against the protected preview.
+- Q3: observer copies `node_modules` with `cp -cR` instead of symlinking (`7e823bc`).
+- Q4: implementation defaults recorded as D44 in `docs/decisions.md`.
+Left as is: the timeout test matches any "timeout" message (tightening means editing a passing test); no server-side `statement_timeout` yet.
+
+## Review findings from T9 (task-review + observer on `31bb88e..0544cdb`)
+
+Both ran as `task-review` and `observer` subagent types. Task review's first hand-back was the word "placeholder"; it was asked again and delivered the real report.
+
+Recorded: the process choices settled in the interview (owner-only invocation, one branch and PR for spec and implementation, `docs(S<nnn>)` commit, always publishing the mockup, `Approved:` line) as D45 in `docs/decisions.md`. Observer flagged publishing as a departure from D36's "optionally"; D45 records the owner's Q6 choice.
+
+Not findings: D44 does hold the 25-character branch rule (both reviewers questioned it). A spec PR that touches `REVIEW.md` is High tier by `REVIEW.md`'s own path list, so the skill needs no note.
+
+Left as is (no-ops: the agent does these by default): fallback when the artifact tool is missing (give the file path); stop-and-ask on a non-numeric argument, an existing spec file or a dirty tree; listing the 000 header rows (the template shows them).
+
+Owner decisions (2026-10-24): Q13 step 6 stays without a PR line (D45 covers it). Q12 became a bigger change: one progress file per spec in `tasks/` (D46), wording approved line by line in Q14–Q20 (AGENTS.md, CLAUDE.md, REVIEW.md, observer, `/learn`, `/spec`, spec 000, D18). This file moved here from `TASKS.md`.
+
+Second round on `ae1d3f0..ba938db` (task-review + observer). Fixed: this file's heading still said "current spec"; the T9 row now cites `ba938db`. Not findings: D18's wording is the owner's approved Q20 text. Left as is: `test/githooks.test.ts:113` stages `TASKS.md` as a fixture path (cosmetic; editing a passing test needs the owner). Needs owner decision: `/learn` says "the progress file" without the path (it runs in the main session, which has AGENTS.md).
+
+## Review findings from T10 (`/code-review` + `/security-review` over the whole branch)
+
+`/code-review` (Opus 5.5, medium), 10 findings:
+1. Pre-Bash bypass rules miss abbreviated forms of the hook-skipping flag and a lower-case hooks-path key. Fixed (Q22) `9ad61d5`→`5d8cf98`; prefixes git finds ambiguous stay allowed.
+2. Commit check misses Vitest's `skipIf`/`runIf`/`concurrent.skip`/`fails`. Fixed (Q23) `2092cb8`→`0b98db0`; `test.each(...).skip` and bracket access still slip through (rare).
+3. Renaming a test file to a non-test name drops its tests unnoticed (only the new path is checked). Fixed (Q24) `f1c37e3`→`6aa859e`.
+4. Test count counts call sites: fewer `it.each` rows and regex `.test(` calls are not seen. Left as a known limit of a text check.
+5. Health check failures left no log. Fixed `915d77c`→`9009f9b`.
+6. Post-edit hook runs ESLint then Vitest (120 s each) under a 180 s hook timeout. Fixed (Q25): both run at once `7d20514`; a timeout is reported even if a grandchild keeps the pipes open `2501be1` (task review).
+7. `db:generate` failed locally without `DATABASE_URL` in the shell. Fixed `c074dab`.
+8. CI waits up to 15 min if Vercel never posts a status. Left: every PR builds on Vercel (no ignored-build step); the 25-character rule is D44.
+9. No server-side `statement_timeout`. Left: owner decided in T8 (left as is).
+10. Fetch guard throws synchronously on relative URLs and doesn't cover `node:https`/undici. Left: already recorded (observer T4); no Claude client exists yet.
+
+`/security-review`: no findings above the bar. Candidate: a retried E2E test's trace in the public `playwright-report` artifact (uploaded on failure) holds the Vercel bypass cookie for that preview host. Filter rated it 3/10: the preview serves a placeholder and test data, and app auth (D13) comes before real data. Hardened (Q26) `40992f9`: no traces while the bypass cookie is in use; failure screenshots instead (they hold page content, not cookies).
+
+Task review + observer on `c0afef9..c074dab`: TDD `915d77c`→`9009f9b` red fails on "expected vi.fn() to be called with arguments: ['connection refused'], Number of calls: 0", test untouched; `c074dab` falls under the configuration exception. Left as is: no test for a non-`Error` throw (trivial `String(error)`), no test for the route's one-line `console.error` wiring.
+
+Task review + observer on `cd50569..40992f9`: TDD `9ad61d5`→`5d8cf98`, `2092cb8`→`0b98db0`, `f1c37e3`→`6aa859e` each red on an assertion ("expected [] to not deeply equal []" / "expected [] to deeply equal [StringContaining…]"), tests untouched. `7d20514` and `40992f9` fall under the configuration exception. Fixed: post-edit timeout could hang on open pipes, and a missing space in `bypass.mjs` (`2501be1`). Left: MARKER also matches marker words inside strings and comments of test files (strict side, unchanged behavior).

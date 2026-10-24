@@ -20,12 +20,12 @@ Stand up an empty but production-shaped TrainingHub: the repo, the toolchain, th
 5. Every PR gets a Vercel preview deploy and its own Neon database branch. CI runs E2E against the preview.
 6. Hooks are active. Demonstrated: a commit that adds `.skip`/`.only` to a test, or deletes a test, is rejected.
 7. The task-review and observer subagents exist and have run on at least one task in this spec.
-8. `/spec` and `/learn` exist. `TASKS.md`, `LEARNINGS.md` and `REVIEW.md` exist.
+8. `/spec` and `/learn` exist. The progress file `tasks/000-foundation.md`, `LEARNINGS.md` and `REVIEW.md` exist.
 9. PR `[S000] Set up project foundation` is open with all review layers done. The owner merges it.
 
 ## Tasks
 
-Keep `TASKS.md` updated from the start: status per task, evidence for every "done" (command output, commit hash, link).
+Keep the progress file `tasks/000-foundation.md` updated from the start: status per task, evidence for every "done" (command output, commit hash, link).
 
 **T1 — Interview: `AGENTS.md` and `CLAUDE.md`.**
 Interview the owner one question at a time. Propose each line; the owner approves, edits or cuts it. Test every line: "Would removing it cause a mistake? If not, cut it." Nothing else in this spec starts before both files are approved and committed. Candidates come from `docs/decisions.md`:

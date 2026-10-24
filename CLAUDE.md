@@ -18,8 +18,8 @@
 - After every task, run the `task-review` and `observer`
   subagents in parallel on that task's diff. Fix task-review
   findings before the next task; any you don't fix go under
-  Needs your decision. Record observer findings in `TASKS.md`
-  and the PR body.
+  Needs your decision. Record observer findings in the
+  progress file and the PR body.
 - Once per PR, before calling the owner: `/code-review`, plus
   `/security-review` for high tier. Fix findings; list the
   rest under Needs your decision.
@@ -27,7 +27,7 @@
   doesn't settle (library, data shape, security approach),
   ask a fresh Opus 5.5 subagent (effort medium) with the
   options and context. Record the advice and your choice in
-  `TASKS.md`.
+  the progress file.
 
 ## Hooks
 

@@ -62,7 +62,7 @@ Single user, so i18n adds cost without benefit. English is standard and works be
 ## Process
 
 **D18 — No issue tracker; specs are the backlog.** (Q20)
-A tracker solves coordination problems a solo developer does not have. Task IDs (`T1`, `T2`, …) stay stable so specs can be imported into Jira via MCP later. TASKS.md tracks progress and survives compaction. Step 03 keeps branch → PR → AI review → owner approval → merge.
+A tracker solves coordination problems a solo developer does not have. Task IDs (`T1`, `T2`, …) stay stable so specs can be imported into Jira via MCP later. TASKS.md tracks progress and survives compaction (one file per spec since D46). Step 03 keeps branch → PR → AI review → owner approval → merge.
 
 **D19 — `PRODUCT.md` for vision and shared decisions, plus one spec per feature in `specs/`.** (Q21)
 One giant spec is too big for one fresh session and has no per-step finish line.
@@ -134,7 +134,8 @@ The retrospective (fresh session) reads transcripts, PR comments, observer and r
 **D29 — No plugins or marketplace for now.** (Q31)
 Everything lives in the repo's `.claude/` folder.
 
-**D30 — Project name `TrainingHub`, at `~/Projects/TrainingHub`, private GitHub repo with branch protection on `main`.** (Q32)
+**D30 — Project name `TrainingHub`, at `~/Projects/TrainingHub`, public GitHub repo with branch protection on `main`.** (Q32; changed from private in spec 000, T2)
+GitHub Free offers no branch protection, rulesets or auto-merge on private repos, and GitHub Pro ($4/month) was rejected in favor of zero infrastructure cost. Commits use the owner's GitHub noreply address. Nothing personal is committed: no secrets, and no unanonymized training data.
 
 **D31 — Git conventions.** (Q33)
 
@@ -190,13 +191,42 @@ Task-review findings the agent does not fix go to "Needs your decision".
 **D40 — The app map and end-to-end flow are decided in spec 001, before the visual direction.** (Q43)
 The `/spec 001` interview starts with the screens, navigation, start screen, and the flow after a run is uploaded (upload → processing → analysis → plan adjustment → in-app notice). The 001 mockup is a clickable prototype of the whole flow in the chosen visual direction. The approved map is recorded in `PRODUCT.md`; later specs detail their screens within it and never change it silently (a change is a question to the owner). Flow and visuals influence each other, so they are decided together with a mockup in front of the owner.
 
+## Decided in spec 000
+
+**D41 — Drizzle ORM + drizzle-kit, with the `pg` driver everywhere (local, CI, Neon).** (spec 000, T5)
+Schema in TypeScript, queries close to SQL, migrations as plain `.sql` files reviewable in the PR before production is migrated (D22). No generate step. One driver means integration tests exercise the production code path. Rejected: Prisma 7 (heavier, extra generate step, own schema language), Kysely with hand-written migrations (no schema or migration generation).
+
+**D42 — Error monitoring with Sentry's free plan (`@sentry/nextjs`).** (spec 000, T6)
+Server errors with stack traces and an email on the first occurrence of a new error, so a failed ingest does not go unnoticed. Rejected: Vercel runtime logs only (about an hour of retention on Hobby, no alerts).
+
+**D43 — Database backups: Neon's built-in restore window only.** (spec 000, T6)
+Owner's choice. Accepted risk: data older than the free-tier restore window cannot be recovered. Rejected: a weekly encrypted `pg_dump` as a GitHub Actions artifact (encryption would be mandatory because artifacts in a public repo are downloadable by any GitHub user).
+
+**D44 — Implementation defaults from spec 000.** (spec 000, T4–T7; recorded after the observer flagged them)
+- E2E runs on Playwright's iPhone 16 profile (WebKit), the closest match to the owner's phone.
+- Local Postgres 17 on port 5433, so it can't collide with another project's Postgres on 5432.
+- Node 24.x everywhere (`engines`, Vercel, CI).
+- `GET /api/health` returns `{status, database}`; 503 when the database is unreachable; `Cache-Control: no-store`.
+- Database: 5 s connect timeout and 5 s query timeout; pool errors are logged by message only (the error object carries the password).
+- Sentry: no performance tracing (`tracesSampleRate: 0`) and no default PII (`sendDefaultPii: false`), because the app holds health data.
+- CI waits for the Vercel commit status, then uses the branch preview URL. Vercel shortens hostnames over 63 characters with an unpredictable hash, so a branch name may be at most 25 characters after slugging (`feat/s003-run-ingest` is 20); CI fails with a clear message otherwise.
+- E2E trades the Vercel bypass secret for a cookie scoped to the preview domain (global setup), so the secret never reaches other sites.
+
+**D45 — How `/spec` runs.** (spec 000, T9 interview, Q1–Q11)
+- Only the owner invokes it (`disable-model-invocation: true`); an agent never starts a spec on its own.
+- The spec, its mockup and the implementation share one branch `feat/s<nnn>-<name>` and one PR (D31). The spec is committed once, after approval, as `docs(S<nnn>): add spec and mockup`; the implementation session opens the PR.
+- Every mockup is published as a private claude.ai artifact and republished after each change (D36 made this optional): a mobile UI is judged best on the phone, and asking each time would almost always get the same answer.
+- An approved spec carries `Approved: <date>` in its header table.
+
+**D46 — One progress file per spec in `tasks/`, replacing `TASKS.md`.** (spec 000, T9 follow-up)
+`tasks/<nnn>-<name>.md` mirrors `specs/<nnn>-<name>.md`; the current file has the branch's spec number; merged specs' files stay unchanged. Parallel specs (004 ∥ 005, D20) never edit the same file, and each spec's evidence and review findings stay in the repo for the retrospective (D28). Rejected: one `TASKS.md` replaced per spec (conflicts between parallel worktrees, evidence only in merged PR bodies); a `-spec`/`-task` suffix (the folder already says it, and it would break D36's file names).
+
 ## Open questions (decided in the named spec's interview)
 
 | Topic | Spec |
 |---|---|
-| ORM and migration tooling | 000 |
-| Error logging / monitoring; database backups | 000 |
 | Database schema; whether to store the raw `.fit` file | 003 |
+| How `.fit` test fixtures are anonymized (GPS tracks, timestamps, device IDs) before they are committed to the public repo | 003 |
 | Which FIT metrics are shown and passed to the coach | 003 / 006 |
 | Coach prompts and personalities | 006 / 007 |
 | Health-data privacy: what is sent to the Claude API, account and data deletion | 002 / 006 |
