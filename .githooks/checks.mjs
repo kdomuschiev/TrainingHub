@@ -50,3 +50,16 @@ export function checkTodos(files, specNumbers) {
     );
 }
 
+
+/**
+ * Maps spec numbers to their risk tier ("high" | "medium" | "low"). A spec
+ * file's "Risk tier" row wins over the spec table in PRODUCT.md.
+ */
+export function specTiers(specFiles, productMd) {
+  return new Map();
+}
+
+/** Rejects changes under `.github/` unless the branch's spec is high tier. */
+export function checkGithub(files, branch, tiers) {
+  return [];
+}

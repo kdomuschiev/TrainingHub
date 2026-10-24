@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { checkTestCount, checkTestMarkers, checkTodos } from "../.githooks/checks.mjs";
+import {
+  checkGithub,
+  checkTestCount,
+  checkTestMarkers,
+  checkTodos,
+  specTiers,
+} from "../.githooks/checks.mjs";
 
 // Markers are assembled from pieces so this file passes its own hook.
 const marker = (...parts: string[]) => parts.join("");
@@ -97,5 +103,55 @@ describe("checkTodos", () => {
         specs,
       ),
     ).toEqual([]);
+  });
+});
+
+describe("specTiers", () => {
+  const productMd = [
+    "| # | Spec | Risk tier |",
+    "|---|---|---|",
+    "| 000 | `foundation`: repo | high |",
+    "| 001 | `design-system`: app map | medium |",
+    "| 003 | `run-ingest`: upload endpoint | high |",
+  ].join("\n");
+
+  it("reads tiers from PRODUCT.md and lets a spec file override them", () => {
+    const specFiles = [
+      { name: "001-design-system.md", content: "| Risk tier | **Low** (docs only) |" },
+    ];
+    expect(specTiers(specFiles, productMd)).toEqual(
+      new Map([
+        ["000", "high"],
+        ["001", "low"],
+        ["003", "high"],
+      ]),
+    );
+  });
+});
+
+describe("checkGithub", () => {
+  const tiers = new Map([
+    ["000", "high"],
+    ["001", "medium"],
+  ]);
+  const workflow = staged(".github/workflows/ci.yml", ["on: push"]);
+
+  it.each(["feat/s001-design-system", "hotfix/broken-deploy", "main"])(
+    "rejects a .github change on %s",
+    (branch) => {
+      expect(checkGithub([workflow], branch, tiers)).toEqual([
+        expect.stringContaining(".github/workflows/ci.yml"),
+      ]);
+    },
+  );
+
+  it("rejects moving a file out of .github on a medium branch", () => {
+    const moved = staged("docs/ci.yml", [], { status: "R", oldPath: ".github/workflows/ci.yml" });
+    expect(checkGithub([moved], "feat/s001-design-system", tiers)).toHaveLength(1);
+  });
+
+  it("accepts a .github change on a high-tier spec branch and other paths anywhere", () => {
+    expect(checkGithub([workflow], "feat/s000-foundation", tiers)).toEqual([]);
+    expect(checkGithub([staged("src/lib/fit.ts", [])], "feat/s001-design-system", tiers)).toEqual([]);
   });
 });
