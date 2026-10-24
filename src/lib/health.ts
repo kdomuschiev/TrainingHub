@@ -6,6 +6,10 @@ export type Health = {
 export async function checkHealth(
   pingDatabase: () => Promise<unknown>,
 ): Promise<Health> {
-  void pingDatabase;
-  return { status: "error", database: "unreachable" };
+  try {
+    await pingDatabase();
+    return { status: "ok", database: "reachable" };
+  } catch {
+    return { status: "error", database: "unreachable" };
+  }
 }
