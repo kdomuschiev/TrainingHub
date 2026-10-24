@@ -55,7 +55,7 @@ const specFiles = existsSync("specs")
   : [];
 const tiers = specTiers(specFiles, existsSync("PRODUCT.md") ? readFileSync("PRODUCT.md", "utf8") : "");
 const files = attachAddedLines(stagedFiles());
-const branch = git("branch", "--show-current").trim();
+const branch = git("branch", "--show-current").trim() || "detached HEAD";
 
 const violations = [
   ...checkTestMarkers(files),
