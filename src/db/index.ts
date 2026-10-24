@@ -3,7 +3,12 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import * as schema from "./schema";
 
-export function createDb(connectionString: string) {
+export type DbOptions = {
+  onPoolError?: (error: Error) => void;
+};
+
+export function createDb(connectionString: string, options: DbOptions = {}) {
+  void options;
   const pool = new Pool({ connectionString, connectionTimeoutMillis: 5_000 });
   return drizzle({ client: pool, schema });
 }
