@@ -18,6 +18,12 @@ export default defineConfig({
         test: {
           name: "integration",
           include: ["src/**/*.int.test.ts", "test/**/*.int.test.ts"],
+          // CI points this at the PR's Neon branch; locally, docker compose.
+          env: {
+            DATABASE_URL:
+              process.env.DATABASE_URL ??
+              "postgresql://traininghub:traininghub@localhost:5433/traininghub_test",
+          },
         },
       },
     ],
