@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { checkTestCount, checkTestMarkers } from "../.githooks/checks.mjs";
+import { checkTestCount, checkTestMarkers, checkTodos } from "../.githooks/checks.mjs";
 
 // Markers are assembled from pieces so this file passes its own hook.
 const marker = (...parts: string[]) => parts.join("");
@@ -64,6 +64,38 @@ describe("checkTestCount", () => {
         staged("src/lib/b.test.ts", [], { status: "R", oldPath: "src/lib/a.test.ts", before: oneTest, after: oneTest }),
         staged("src/lib/fit.ts", [], { status: "D", before: "export {};", after: null }),
       ]),
+    ).toEqual([]);
+  });
+});
+
+describe("checkTodos", () => {
+  const specs = new Set(["000", "003"]);
+  const todo = marker("TO", "DO");
+
+  it.each([
+    `// ${todo} parse laps`,
+    `// ${todo}: later`,
+    `// ${todo}(kiril): parse laps`,
+    `// ${todo}(S009): parse laps`,
+    `// ${todo}(S003):`,
+    `// ${marker("FIX", "ME")} parse laps`,
+    `// ${marker("HA", "CK")} parse laps`,
+  ])("rejects %s", (line) => {
+    expect(checkTodos([staged("src/lib/fit.ts", [line])], specs)).toEqual([
+      expect.stringContaining("src/lib/fit.ts"),
+    ]);
+  });
+
+  it("accepts a reference to a known spec, Markdown files and existing lines", () => {
+    expect(
+      checkTodos(
+        [
+          staged("src/lib/fit.ts", [`// ${todo}(S003): parse lap records`]),
+          staged("TASKS.md", [`- ${todo} write the retrospective`]),
+          staged("src/lib/laps.ts", ["export const laps = [];"], { before: `// ${todo} old` }),
+        ],
+        specs,
+      ),
     ).toEqual([]);
   });
 });
