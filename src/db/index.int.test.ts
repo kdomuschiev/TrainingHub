@@ -38,4 +38,13 @@ describe("createDb", () => {
       await killer.$client.end();
     }
   });
+
+  it("gives up on a query that runs past the timeout", async () => {
+    const db = createDb(process.env.DATABASE_URL!, { queryTimeoutMillis: 100 });
+    try {
+      await expect(db.$client.query("select pg_sleep(1)")).rejects.toThrow(/timeout/i);
+    } finally {
+      await db.$client.end();
+    }
+  });
 });

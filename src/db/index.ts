@@ -5,6 +5,7 @@ import * as schema from "./schema";
 
 export type DbOptions = {
   onPoolError?: (error: Error) => void;
+  queryTimeoutMillis?: number;
 };
 
 export function createDb(connectionString: string, options: DbOptions = {}) {
