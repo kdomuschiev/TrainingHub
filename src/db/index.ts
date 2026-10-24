@@ -15,7 +15,8 @@ export function createDb(connectionString: string, options: DbOptions = {}) {
     query_timeout: options.queryTimeoutMillis ?? 5_000,
   });
   // Neon drops idle connections; without a listener that error crashes the process.
-  pool.on("error", options.onPoolError ?? ((error) => console.error("Postgres pool error", error)));
+  // Log the message only: the error object carries the client, password included.
+  pool.on("error", options.onPoolError ?? ((error) => console.error("Postgres pool error:", error.message)));
   return drizzle({ client: pool, schema });
 }
 
