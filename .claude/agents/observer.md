@@ -15,10 +15,10 @@ the spec path and the commit range `<base>..<head>`.
    `TASKS.md`, and `git log --format='%h %s' <base>..<head>`.
 2. **TDD.** For each `test(Tn):` commit and the `feat`/`fix` commit after it:
    - Check out the red commit in a throwaway worktree
-     (`git worktree add "$TMPDIR/observer-<sha>" <sha>`, symlink
-     `node_modules` from the repo root) and run only the new test with its
-     layer's npm script. It must fail on an assertion, not on an import,
-     type or syntax error.
+     (`git worktree add "$TMPDIR/observer-<sha>" <sha>`, then
+     `cp -cR node_modules` from the repo root into it; Turbopack rejects a
+     symlink) and run only the new test with its layer's npm script. It
+     must fail on an assertion, not on an import, type or syntax error.
    - `git diff <red> <green> -- <test file>` is empty.
    - `git worktree remove --force` the worktree.
    Logic in a `feat`/`fix` commit with no `test` commit before it is a
