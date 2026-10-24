@@ -56,10 +56,23 @@ export function checkTodos(files, specNumbers) {
  * file's "Risk tier" row wins over the spec table in PRODUCT.md.
  */
 export function specTiers(specFiles, productMd) {
-  return new Map();
+  const tiers = new Map();
+  for (const [, spec, tier] of productMd.matchAll(/^\|\s*(\d{3})\s*\|.*\|\s*(high|medium|low)\s*\|\s*$/gim)) {
+    tiers.set(spec, tier.toLowerCase());
+  }
+  for (const { name, content } of specFiles) {
+    const spec = name.match(/^(\d{3})-/)?.[1];
+    const tier = content.match(/^\|\s*Risk tier\s*\|\s*\**(high|medium|low)\b/im)?.[1];
+    if (spec && tier) tiers.set(spec, tier.toLowerCase());
+  }
+  return tiers;
 }
 
 /** Rejects changes under `.github/` unless the branch's spec is high tier. */
 export function checkGithub(files, branch, tiers) {
-  return [];
+  const spec = branch.match(/^[a-z]+\/s(\d{3})-/)?.[1];
+  if (spec && tiers.get(spec) === "high") return [];
+  return files
+    .filter((file) => [file.path, file.oldPath].some((path) => path?.startsWith(".github/")))
+    .map((file) => `${file.path}: .github/ changes only in high-tier specs (branch ${branch})`);
 }
