@@ -202,6 +202,16 @@ Server errors with stack traces and an email on the first occurrence of a new er
 **D43 — Database backups: Neon's built-in restore window only.** (spec 000, T6)
 Owner's choice. Accepted risk: data older than the free-tier restore window cannot be recovered. Rejected: a weekly encrypted `pg_dump` as a GitHub Actions artifact (encryption would be mandatory because artifacts in a public repo are downloadable by any GitHub user).
 
+**D44 — Implementation defaults from spec 000.** (spec 000, T4–T7; recorded after the observer flagged them)
+- E2E runs on Playwright's iPhone 16 profile (WebKit), the closest match to the owner's phone.
+- Local Postgres 17 on port 5433, so it can't collide with another project's Postgres on 5432.
+- Node 24.x everywhere (`engines`, Vercel, CI).
+- `GET /api/health` returns `{status, database}`; 503 when the database is unreachable; `Cache-Control: no-store`.
+- Database: 5 s connect timeout and 5 s query timeout; pool errors are logged by message only (the error object carries the password).
+- Sentry: no performance tracing (`tracesSampleRate: 0`) and no default PII (`sendDefaultPii: false`), because the app holds health data.
+- CI waits for the Vercel commit status, then uses the branch preview URL. Vercel shortens hostnames over 63 characters with an unpredictable hash, so a branch name may be at most 25 characters after slugging (`feat/s003-run-ingest` is 20); CI fails with a clear message otherwise.
+- E2E trades the Vercel bypass secret for a cookie scoped to the preview domain (global setup), so the secret never reaches other sites.
+
 ## Open questions (decided in the named spec's interview)
 
 | Topic | Spec |

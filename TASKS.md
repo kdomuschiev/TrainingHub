@@ -30,4 +30,9 @@ Observer findings (recorded, not fixed):
 - Observer T5: a symlinked `node_modules` breaks Turbopack in the throwaway worktree; it re-ran the E2E red with a copied `node_modules`.
 - Observer T3 claimed the commit trailer should say Sonnet 5.5. That's wrong: the session runs Opus 5.5.
 
-Unfixed task-review findings: see the owner report (Needs your decision).
+Owner decisions on the unfixed findings (2026-10-24, Q1–Q4, all approved):
+- Q1: pg pool `error` listener and 5 s query timeout, red/green `37c9991`→`b1b2af4`, `3cd844b`→`e720883`. Task review on it found the default log printed the raw error (client + password): fixed `edb5904`→`4d7f7f3`. Observer: both pairs red on assertions, tests untouched. Integration 5 passed.
+- Q2: Vercel bypass secret traded for a preview-only cookie in a Playwright global setup (`87d5c47`). CI run 40116586204 all green; E2E 2 passed against the protected preview.
+- Q3: observer copies `node_modules` with `cp -cR` instead of symlinking (`7e823bc`).
+- Q4: implementation defaults recorded as D44 in `docs/decisions.md`.
+Left as is: the timeout test matches any "timeout" message (tightening means editing a passing test); no server-side `statement_timeout` yet.
