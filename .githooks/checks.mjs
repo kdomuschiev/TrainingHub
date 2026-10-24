@@ -6,6 +6,9 @@
 
 const TEST_FILE = /\.(test|spec)\.[cm]?[jt]sx?$/;
 const MARKER = /\b(?:(?:it|test|describe)\.(?:skip|only|todo)|x(?:it|test|describe)|f(?:it|describe))\b/;
+// The bracketed letters keep this file from matching its own check.
+const TODO_MARKER = /\b(?:T[O]DO|F[I]XME|H[A]CK)\b(?:\(S(\d{3})\):\s*\S)?/g;
+const EXAMPLE_TODO = "T" + "ODO(S003): <what>";
 
 /** Rejects `.skip`, `.only`, `.todo`, `xit` and friends added to a test. */
 export function checkTestMarkers(files) {
@@ -36,5 +39,14 @@ function countTests(source) {
 
 /** Rejects added to-do, fix-me and hack markers that do not name a known spec. */
 export function checkTodos(files, specNumbers) {
-  return [];
+  return files
+    .filter((file) => !file.path.endsWith(".md"))
+    .flatMap((file) =>
+      file.addedLines
+        .filter((line) =>
+          [...line.matchAll(TODO_MARKER)].some(([, spec]) => !specNumbers.has(spec)),
+        )
+        .map((line) => `${file.path}: write it as ${EXAMPLE_TODO}: ${line.trim()}`),
+    );
 }
+
