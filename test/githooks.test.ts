@@ -49,6 +49,28 @@ describe("checkTestMarkers", () => {
       ]),
     ).toEqual([]);
   });
+
+  it.each([
+    marker("it", ".skipIf", "(true)"),
+    marker("describe", ".runIf", "(false)"),
+    marker("test", ".concurrent", ".skip"),
+    marker("it", ".fails"),
+  ])("rejects the conditional or chained form %s", (fn) => {
+    const line = `${fn}("parses laps", () => {});`;
+    const violations = checkTestMarkers([staged("src/lib/fit.test.ts", [line])]);
+    expect(violations).toEqual([expect.stringContaining("src/lib/fit.test.ts")]);
+  });
+
+  it("accepts chained forms that still run the test", () => {
+    expect(
+      checkTestMarkers([
+        staged("src/lib/fit.test.ts", [
+          'test.concurrent("parses laps", () => {});',
+          'it.each([1, 2])("parses lap %i", () => {});',
+        ]),
+      ]),
+    ).toEqual([]);
+  });
 });
 
 describe("checkTestCount", () => {
