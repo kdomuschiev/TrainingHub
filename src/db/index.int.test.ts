@@ -39,6 +39,26 @@ describe("createDb", () => {
     }
   });
 
+  it("logs only the message of a pool error, never the client and its password", async () => {
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+    const db = createDb(process.env.DATABASE_URL!);
+    const killer = createDb(process.env.DATABASE_URL!);
+    try {
+      const client = await db.$client.connect();
+      const { rows } = await client.query<{ pid: number }>("select pg_backend_pid() as pid");
+      client.release();
+
+      await killer.$client.query("select pg_terminate_backend($1)", [rows[0].pid]);
+
+      await vi.waitFor(() => expect(log).toHaveBeenCalledOnce());
+      expect(log.mock.calls[0].every((arg) => typeof arg === "string")).toBe(true);
+    } finally {
+      log.mockRestore();
+      await db.$client.end();
+      await killer.$client.end();
+    }
+  });
+
   it("gives up on a query that runs past the timeout", async () => {
     const db = createDb(process.env.DATABASE_URL!, { queryTimeoutMillis: 100 });
     try {
