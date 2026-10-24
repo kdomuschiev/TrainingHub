@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  addedLinesFromDiff,
   checkGithub,
   checkTestCount,
   checkTestMarkers,
@@ -165,5 +166,26 @@ describe("checkGithub", () => {
   it("accepts a .github change on a high-tier spec branch and other paths anywhere", () => {
     expect(checkGithub([workflow], "feat/s000-foundation", tiers)).toEqual([]);
     expect(checkGithub([staged("src/lib/fit.ts", [])], "feat/s001-design-system", tiers)).toEqual([]);
+  });
+});
+
+describe("addedLinesFromDiff", () => {
+  it("returns added lines, including ones that look like diff headers", () => {
+    const diff = [
+      "diff --git a/src/lib/count.ts b/src/lib/count.ts",
+      "index 1111111..2222222 100644",
+      "--- a/src/lib/count.ts",
+      "+++ b/src/lib/count.ts",
+      "@@ -1,0 +2,3 @@",
+      "+let n = 0;",
+      "+++ n;",
+      "+",
+      "\\ No newline at end of file",
+      "@@ -9 +11 @@",
+      "-old",
+      "+new",
+      "",
+    ].join("\n");
+    expect(addedLinesFromDiff(diff)).toEqual(["let n = 0;", "++ n;", "", "new"]);
   });
 });

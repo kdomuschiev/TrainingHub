@@ -76,3 +76,8 @@ export function checkGithub(files, branch, tiers) {
     .filter((file) => [file.path, file.oldPath].some((path) => path?.startsWith(".github/")))
     .map((file) => `${file.path}: .github/ changes only in high-tier specs (branch ${branch})`);
 }
+
+/** The lines a one-file `git diff -U0` adds; headers before the first hunk are skipped. */
+export function addedLinesFromDiff(diff) {
+  return [];
+}
