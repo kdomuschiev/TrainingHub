@@ -21,7 +21,7 @@ The tier in the spec is the minimum.
   by the `/spec` interview of the spec that creates them
 
 ## Low
-- `docs/`, `specs/`, `PRODUCT.md`, `TASKS.md`, `LEARNINGS.md`, `README.md`
+- `docs/`, `specs/`, `tasks/`, `PRODUCT.md`, `LEARNINGS.md`, `README.md`
 
 ## Medium
 - Everything else

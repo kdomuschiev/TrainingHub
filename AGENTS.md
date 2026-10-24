@@ -8,8 +8,10 @@ coaches. Next.js + TypeScript, Neon Postgres, Vercel.
 - Product and scope: `PRODUCT.md`. Current spec: `specs/`.
 - Decisions: `docs/decisions.md`. Do not reopen a decided question
   without new information; if you have it, ask the owner.
-- Progress: `TASKS.md`. Read it first when resuming; keep it updated
-  with status and evidence for every "done".
+- Progress: one progress file per spec, `tasks/<nnn>-<name>.md`,
+  named like the spec; the current one has the branch's spec
+  number. Read it first when resuming; keep it updated with status
+  and evidence for every "done". Leave merged specs' files as they are.
 
 ## Commands
 
@@ -80,7 +82,7 @@ CI never call the real Claude API; use recorded responses.
 ## Autonomy
 
 Keep going while the next step doesn't need the owner. When
-blocked, leave a status note with the next action in `TASKS.md`.
+blocked, leave a status note with the next action in the progress file.
 
 Do without asking:
 - Read and write code, run tests/lint/build inside the repo.

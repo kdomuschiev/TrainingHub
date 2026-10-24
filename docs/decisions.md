@@ -62,7 +62,7 @@ Single user, so i18n adds cost without benefit. English is standard and works be
 ## Process
 
 **D18 — No issue tracker; specs are the backlog.** (Q20)
-A tracker solves coordination problems a solo developer does not have. Task IDs (`T1`, `T2`, …) stay stable so specs can be imported into Jira via MCP later. TASKS.md tracks progress and survives compaction. Step 03 keeps branch → PR → AI review → owner approval → merge.
+A tracker solves coordination problems a solo developer does not have. Task IDs (`T1`, `T2`, …) stay stable so specs can be imported into Jira via MCP later. TASKS.md tracks progress and survives compaction (one file per spec since D46). Step 03 keeps branch → PR → AI review → owner approval → merge.
 
 **D19 — `PRODUCT.md` for vision and shared decisions, plus one spec per feature in `specs/`.** (Q21)
 One giant spec is too big for one fresh session and has no per-step finish line.
@@ -217,6 +217,9 @@ Owner's choice. Accepted risk: data older than the free-tier restore window cann
 - The spec, its mockup and the implementation share one branch `feat/s<nnn>-<name>` and one PR (D31). The spec is committed once, after approval, as `docs(S<nnn>): add spec and mockup`; the implementation session opens the PR.
 - Every mockup is published as a private claude.ai artifact and republished after each change (D36 made this optional): a mobile UI is judged best on the phone, and asking each time would almost always get the same answer.
 - An approved spec carries `Approved: <date>` in its header table.
+
+**D46 — One progress file per spec in `tasks/`, replacing `TASKS.md`.** (spec 000, T9 follow-up)
+`tasks/<nnn>-<name>.md` mirrors `specs/<nnn>-<name>.md`; the current file has the branch's spec number; merged specs' files stay unchanged. Parallel specs (004 ∥ 005, D20) never edit the same file, and each spec's evidence and review findings stay in the repo for the retrospective (D28). Rejected: one `TASKS.md` replaced per spec (conflicts between parallel worktrees, evidence only in merged PR bodies); a `-spec`/`-task` suffix (the folder already says it, and it would break D36's file names).
 
 ## Open questions (decided in the named spec's interview)
 

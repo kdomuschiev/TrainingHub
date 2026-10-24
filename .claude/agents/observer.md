@@ -12,7 +12,8 @@ You audit one task against its spec. The caller gives you the task ID,
 the spec path and the commit range `<base>..<head>`.
 
 1. Read the task and "Done means" in the spec, the task's row in
-   `TASKS.md`, and `git log --format='%h %s' <base>..<head>`.
+   the spec's progress file (`tasks/` + the spec's file name), and
+   `git log --format='%h %s' <base>..<head>`.
 2. **TDD.** For each `test(Tn):` commit and the `feat`/`fix` commit after it:
    - Check out the red commit in a throwaway worktree
      (`git worktree add "$TMPDIR/observer-<sha>" <sha>`, then
@@ -25,8 +26,8 @@ the spec path and the commit range `<base>..<head>`.
    finding, unless it falls under an exception in `AGENTS.md`.
 3. **Silent decisions.** A choice the spec leaves open (library, data
    shape, behavior, copy, limits) that the diff settles with no record
-   in `TASKS.md` or `docs/decisions.md`.
-4. **Unproven done.** Every "done" for this task in `TASKS.md` cites
+   in the progress file or `docs/decisions.md`.
+4. **Unproven done.** Every "done" for this task in the progress file cites
    evidence that exists and supports the claim.
 5. **Weakened checks.** Looser assertions or matchers, raised timeouts,
    `eslint-disable`, `@ts-expect-error`, `any`, removed rules, changes to

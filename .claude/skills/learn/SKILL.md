@@ -13,7 +13,8 @@ Append the owner's note to `LEARNINGS.md` as one entry at the bottom:
 owner wrote it, and what went wrong if you know. No proposed fix; the
 retrospective proposes fixes.
 
-Take spec and task from the in-progress row of `TASKS.md` and the branch
-from `git branch --show-current`; write `—` for anything you can't find.
+Take the branch from `git branch --show-current`, the spec from the
+branch name and the task from the in-progress row of the progress file;
+write `—` for anything you can't find.
 Commit only `LEARNINGS.md` right away as `docs(T<task>): record learning`,
 then continue where you left off.

@@ -62,7 +62,8 @@ to the Autonomy section of `AGENTS.md`.
 In the same change: each new decision goes into `docs/decisions.md`
 as the next D-number with its reason; answered rows leave the
 open-questions table; the spec's High paths go into `REVIEW.md`;
-`TASKS.md` becomes this spec's task table, every task `not started`.
+the spec's progress file `tasks/<nnn>-<name>.md` starts with its task
+table in the format of `tasks/000-foundation.md`, every task `not started`.
 
 ## 4. Write the mockup
 
@@ -87,8 +88,8 @@ to the owner.
 
 ## 6. Finish
 
-After approval, commit the spec, the mockup, `docs/decisions.md`,
-`REVIEW.md` and `TASKS.md` as `docs(S<nnn>): add spec and mockup`,
+After approval, commit the spec, the mockup, the progress file,
+`docs/decisions.md` and `REVIEW.md` as `docs(S<nnn>): add spec and mockup`,
 then push the branch. End with the report from `AGENTS.md`, with
 **New session:** yes — implementation starts fresh with
 "Implement spec <nnn>".
