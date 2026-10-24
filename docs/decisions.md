@@ -212,6 +212,12 @@ Owner's choice. Accepted risk: data older than the free-tier restore window cann
 - CI waits for the Vercel commit status, then uses the branch preview URL. Vercel shortens hostnames over 63 characters with an unpredictable hash, so a branch name may be at most 25 characters after slugging (`feat/s003-run-ingest` is 20); CI fails with a clear message otherwise.
 - E2E trades the Vercel bypass secret for a cookie scoped to the preview domain (global setup), so the secret never reaches other sites.
 
+**D45 — How `/spec` runs.** (spec 000, T9 interview, Q1–Q11)
+- Only the owner invokes it (`disable-model-invocation: true`); an agent never starts a spec on its own.
+- The spec, its mockup and the implementation share one branch `feat/s<nnn>-<name>` and one PR (D31). The spec is committed once, after approval, as `docs(S<nnn>): add spec and mockup`; the implementation session opens the PR.
+- Every mockup is published as a private claude.ai artifact and republished after each change (D36 made this optional): a mobile UI is judged best on the phone, and asking each time would almost always get the same answer.
+- An approved spec carries `Approved: <date>` in its header table.
+
 ## Open questions (decided in the named spec's interview)
 
 | Topic | Spec |
