@@ -20,9 +20,12 @@ const run = (args) =>
     child.stdout.on("data", (chunk) => (output += chunk));
     child.stderr.on("data", (chunk) => (output += chunk));
     child.on("error", (error) => (output += error.message));
-    child.on("close", (status, signal) =>
-      resolve({ status, output: signal ? `${output}\nStopped by ${signal} after 120 s.` : output }),
-    );
+    // A killed npx can leave its child holding the pipes, so "close" may
+    // never come: resolve on the kill itself.
+    child.on("exit", (status, signal) => {
+      if (signal) resolve({ status, output: `${output}\nStopped by ${signal} after 120 s.` });
+    });
+    child.on("close", (status) => resolve({ status, output }));
   });
 const results = await Promise.all([
   run(["eslint", "--max-warnings=0", "--no-warn-ignored", file]),

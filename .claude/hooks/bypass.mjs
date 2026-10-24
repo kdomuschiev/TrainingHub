@@ -7,7 +7,7 @@ const rules = [
   [/--no-veri(?:fy?)?\b/, "--no-verify skips the git hooks"],
   [/\bgit\b[^;&|]*?\scommit\b[^;&|]*\s-[a-zA-Z]*n[a-zA-Z]*(?=\s|$)/, "git commit -n skips the git hooks"],
   // git config keys are case-insensitive.
-  [/core\.hooksPath/i,"core.hooksPath is set by `npm install` only"],
+  [/core\.hooksPath/i, "core.hooksPath is set by `npm install` only"],
 ];
 
 /** Returns why the command would switch off the git hooks; empty if it would not. */
