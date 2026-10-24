@@ -23,4 +23,17 @@ describe("bypassReasons", () => {
   ])("allows %s", (command) => {
     expect(bypassReasons(command)).toEqual([]);
   });
+
+  it.each([
+    'git commit --no-veri -m "x"',
+    'git commit --no-verif -m "x"',
+    "git config core.hookspath /dev/null",
+    "git -c CORE.HOOKSPATH=/dev/null commit -m x",
+  ])("blocks the abbreviated or lower-case form %s", (command) => {
+    expect(bypassReasons(command)).not.toEqual([]);
+  });
+
+  it("allows the unrelated flag --no-verbose", () => {
+    expect(bypassReasons('git commit --no-verbose -m "x"')).toEqual([]);
+  });
 });
