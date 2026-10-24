@@ -6,7 +6,7 @@ Status of the current spec. Every "done" needs evidence (command output, commit 
 
 | Task | Status | Evidence / next action |
 |---|---|---|
-| T1 Interview: `AGENTS.md` and `CLAUDE.md` | done | Interview 2026-10-24, Q1–Q13: every section approved by the owner (Q12 edited: advisor at effort medium; Q13 shortened). Full read approved, plus branch types added to Git. Committed as the first commit on `main` (hash: `git log --reverse \| head -1`). |
+| T1 Interview: `AGENTS.md` and `CLAUDE.md` | done | Interview 2026-10-24, Q1–Q13: every section approved by the owner (Q12 edited: advisor at effort medium; Q13 shortened). Full read approved, plus branch types added to Git. Committed as the first commit on `main` `5a37718`. |
 | T2 Git and GitHub | in progress | Local `git init`, `.gitignore` and first commit done. Next: work on `feat/s000-foundation`; ask the owner before creating the GitHub repo. |
 | T3 Next.js scaffold | blocked by T1 | — |
 | T4 Test toolchain | blocked by T1 | — |
