@@ -25,9 +25,12 @@ export function checkTestMarkers(files) {
 /** Rejects a deleted test file, or a test file with fewer tests than before. */
 export function checkTestCount(files) {
   return files
-    .filter((file) => TEST_FILE.test(file.path) && file.before !== null)
+    .filter((file) => TEST_FILE.test(file.oldPath ?? file.path) && file.before !== null)
     .flatMap((file) => {
       if (file.status === "D") return [`${file.path}: test file deleted`];
+      if (!TEST_FILE.test(file.path)) {
+        return [`${file.oldPath}: test file renamed to ${file.path}, which Vitest does not run`];
+      }
       const before = countTests(file.before);
       const after = countTests(file.after ?? "");
       return after < before ? [`${file.path}: ${before} tests before, ${after} now`] : [];
