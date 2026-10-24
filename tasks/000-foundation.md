@@ -15,7 +15,7 @@ Every "done" needs evidence (command output, commit hash, link).
 | T7 CI (GitHub Actions) | done | `.github/workflows/ci.yml` (`aa35d39`). Run 40096948093 all green: Lint, Typecheck, Unit tests, Wait for Vercel preview, Integration tests (2 passed against Neon `preview/feat/s000-foundation` via neonctl 8.11.1), E2E tests (2 passed against the preview URL through the protection bypass). Required checks on `main`: those 6 jobs (GitHub Actions app) + `Vercel` (strict). The preview job is required too because GitHub treats skipped jobs as passing. PR #1 merge state `CLEAN`. |
 | T8 Interview: hooks, review subagents, `REVIEW.md`, `/learn` | done (owner decisions pending, see below) | Interview 2026-10-24, Q1–Q6 approved as proposed (Q1 REVIEW.md; Q2 two hook layers + `.githooks/` in High; Q3 `TODO(S<nnn>):` format; Q4 task-review; Q5 observer; Q6 `/learn`). Commit checks built red/green: `43c3343`→`405ae75` (skip/only), `dd95093`→`6c28378` (deleted/shrinking tests), `4094ac2`→`b041be7` (TODOs), `88aff78`→`7998900` (`.github/` tier), plus review fixes `8058ad9`→`8d10e32` (word "fit"), `3a3f221`→`e9e3a1e` (`git -C … commit -n`), `d49a2e5`→`cc5a6b9` (diff parsing). Wiring: pre-commit `97c72ee`/`88d16a6`, Claude hooks `00d4019`/`ae0b034`, agents `7ff710b`, REVIEW.md `467abf0`, `/learn` + LEARNINGS.md `52450fb`. Unit 43 passed, lint and typecheck clean. Done means #6 demonstrated (each commit rejected, exit 1): `.skip`, `.only`, deleted `src/lib/health.test.ts`, test removed from it ("2 tests before, 1 now"), bare TODO, `.github/` change on detached HEAD. The pre-Bash hook also blocked my own commands containing the patterns, and post-edit fed back the red test failure. Both subagents ran over T3–T8 (findings below). The agent types load only in a new session, so this session ran them as general-purpose agents on Sonnet 5.5 at effort low, following the definition files verbatim. |
 | T9 Interview: `/spec` skill | done | Interview 2026-10-24 using `writing-for-agents`, Q1–Q8 (frontmatter, read + branch, interview, UI section, write spec, mockup, review loop, finish) approved as proposed; full read added Q9 (pad the number to three digits) and Q10 (`git grep` for deferred TODOs), Q11 full file approved. Skill `.claude/skills/spec/SKILL.md` committed `0544cdb`; D45 `ae1d3f0`; progress files per spec (D46, Q14–Q20) `ba938db`. Covers D34 (read context, one question at a time with a recommendation, fresh session at the end) and D36 (mockup with every state, spec and mockup updated together, frozen after approval). First real run: `/spec 001` in a new session. |
-| T10 PR and review | not started | Draft PR #1 open; review layers after T9. |
+| T10 PR and review | in progress | `/code-review` (medium, `main...HEAD`): 10 findings; fixed #5 health failures now logged (red/green `915d77c`→`9009f9b`) and #7 drizzle-kit loads `.env.local` (`c074dab`, verified `db:generate` with no env set). `/security-review`: one candidate (bypass cookie in the public Playwright report artifact), false-positive filter 3/10, below the report bar; no findings. **Next:** owner decisions below, mark PR #1 ready, owner's next-day read. |
 
 ## Review findings from T8 (task-review + observer over T3–T8)
 
@@ -50,3 +50,21 @@ Left as is (no-ops: the agent does these by default): fallback when the artifact
 Owner decisions (2026-10-24): Q13 step 6 stays without a PR line (D45 covers it). Q12 became a bigger change: one progress file per spec in `tasks/` (D46), wording approved line by line in Q14–Q20 (AGENTS.md, CLAUDE.md, REVIEW.md, observer, `/learn`, `/spec`, spec 000, D18). This file moved here from `TASKS.md`.
 
 Second round on `ae1d3f0..ba938db` (task-review + observer). Fixed: this file's heading still said "current spec"; the T9 row now cites `ba938db`. Not findings: D18's wording is the owner's approved Q20 text. Left as is: `test/githooks.test.ts:113` stages `TASKS.md` as a fixture path (cosmetic; editing a passing test needs the owner). Needs owner decision: `/learn` says "the progress file" without the path (it runs in the main session, which has AGENTS.md).
+
+## Review findings from T10 (`/code-review` + `/security-review` over the whole branch)
+
+`/code-review` (Opus 5.5, medium), 10 findings:
+1. Pre-Bash bypass rules miss abbreviated `--no-veri…` and lower-case `core.hookspath`. Needs owner (hook, D37).
+2. Commit check misses Vitest's `skipIf`/`runIf`/`concurrent.skip`/`fails`. Needs owner (hook, D37).
+3. Renaming a test file to a non-test name drops its tests unnoticed (only the new path is checked). Needs owner (hook, D37).
+4. Test count counts call sites: fewer `it.each` rows and regex `.test(` calls are not seen. Left as a known limit of a text check.
+5. Health check failures left no log. Fixed `915d77c`→`9009f9b`.
+6. Post-edit hook runs ESLint then Vitest (120 s each) under a 180 s hook timeout. Needs owner (hook, D37).
+7. `db:generate` failed locally without `DATABASE_URL` in the shell. Fixed `c074dab`.
+8. CI waits up to 15 min if Vercel never posts a status. Left: every PR builds on Vercel (no ignored-build step); the 25-character rule is D44.
+9. No server-side `statement_timeout`. Left: owner decided in T8 (left as is).
+10. Fetch guard throws synchronously on relative URLs and doesn't cover `node:https`/undici. Left: already recorded (observer T4); no Claude client exists yet.
+
+`/security-review`: no findings above the bar. Candidate: a retried E2E test's trace in the public `playwright-report` artifact (uploaded on failure) holds the Vercel bypass cookie for that preview host. Filter rated it 3/10: the preview serves a placeholder and test data, and app auth (D13) comes before real data. Needs owner as hardening.
+
+Task review + observer on `c0afef9..c074dab`: TDD `915d77c`→`9009f9b` red fails on "expected vi.fn() to be called with arguments: ['connection refused'], Number of calls: 0", test untouched; `c074dab` falls under the configuration exception. Left as is: no test for a non-`Error` throw (trivial `String(error)`), no test for the route's one-line `console.error` wiring.
