@@ -4,7 +4,7 @@
 // through as a quoted argument.
 const rules = [
   [/--no-verify\b/, "--no-verify skips the git hooks"],
-  [/\bgit\s+commit\b[^;&|]*\s-[a-zA-Z]*n[a-zA-Z]*(?=\s|$)/, "git commit -n skips the git hooks"],
+  [/\bgit\b[^;&|]*?\scommit\b[^;&|]*\s-[a-zA-Z]*n[a-zA-Z]*(?=\s|$)/, "git commit -n skips the git hooks"],
   [/core\.hooksPath/, "core.hooksPath is set by `npm install` only"],
 ];
 
