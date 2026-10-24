@@ -1,0 +1,27 @@
+# dependencies
+node_modules/
+
+# Next.js / build
+.next/
+out/
+build/
+*.tsbuildinfo
+next-env.d.ts
+
+# tests
+coverage/
+test-results/
+playwright-report/
+playwright/.cache/
+
+# env and secrets
+.env
+.env*.local
+.vercel/
+
+# OS / editor
+.DS_Store
+*.log
+
+# Claude Code local settings
+.claude/settings.local.json
