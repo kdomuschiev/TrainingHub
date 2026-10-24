@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import * as schema from "./schema";
@@ -21,6 +22,5 @@ export function getDb(): Db {
 }
 
 export async function pingDatabase(database: Db = getDb()): Promise<void> {
-  void database;
-  throw new Error("not implemented");
+  await database.execute(sql`select 1`);
 }
