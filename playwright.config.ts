@@ -17,5 +17,10 @@ export default defineConfig({
         url: baseURL,
         reuseExistingServer: !process.env.CI,
         timeout: 180_000,
+        env: {
+          DATABASE_URL:
+            process.env.DATABASE_URL ??
+            "postgresql://traininghub:traininghub@localhost:5433/traininghub_test",
+        },
       },
 });
