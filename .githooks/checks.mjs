@@ -5,12 +5,13 @@
 //   before: string | null, after: string | null, addedLines: string[] }
 
 const TEST_FILE = /\.(test|spec)\.[cm]?[jt]sx?$/;
-const MARKER = /\b(?:(?:it|test|describe)\.(?:skip|only|todo)\b|(?:xit|xtest|xdescribe|fit|fdescribe)\s*\()/;
+const MARKER =
+  /\b(?:(?:it|test|describe)(?:\.\w+)*\.(?:skip|only|todo|skipIf|runIf|fails)\b|(?:xit|xtest|xdescribe|fit|fdescribe)\s*\()/;
 // The bracketed letters keep this file from matching its own check.
 const TODO_MARKER = /\b(?:T[O]DO|F[I]XME|H[A]CK)\b(?:\(S(\d{3})\):\s*\S)?/g;
 const EXAMPLE_TODO = "T" + "ODO(S003): <what>";
 
-/** Rejects `.skip`, `.only`, `.todo`, `xit` and friends added to a test. */
+/** Rejects `.skip`, `.only`, `.todo`, `.skipIf`, `.runIf`, `.fails`, `xit` and friends added to a test. */
 export function checkTestMarkers(files) {
   return files
     .filter((file) => TEST_FILE.test(file.path))
