@@ -3,6 +3,7 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import {
+  addedLinesFromDiff,
   checkGithub,
   checkTestCount,
   checkTestMarkers,
@@ -39,11 +40,10 @@ function stagedFiles() {
 }
 
 function attachAddedLines(files) {
-  const byPath = new Map(files.map((file) => [file.path, file]));
-  let current;
-  for (const line of git("diff", "--cached", "-U0", "-M", "--no-color").split("\n")) {
-    if (line.startsWith("+++ ")) current = byPath.get(line.slice(6));
-    else if (line.startsWith("+") && current) current.addedLines.push(line.slice(1));
+  for (const file of files) {
+    if (file.status === "D") continue;
+    const paths = file.oldPath ? [file.oldPath, file.path] : [file.path];
+    file.addedLines = addedLinesFromDiff(git("diff", "--cached", "-U0", "-M", "--no-color", "--", ...paths));
   }
   return files;
 }

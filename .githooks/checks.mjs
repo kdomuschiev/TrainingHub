@@ -33,6 +33,7 @@ export function checkTestCount(files) {
     });
 }
 
+// A heuristic: commented-out tests still count. The observer catches those.
 function countTests(source) {
   return source.match(/\b(?:it|test)(?:\.\w+)*\s*\(/g)?.length ?? 0;
 }

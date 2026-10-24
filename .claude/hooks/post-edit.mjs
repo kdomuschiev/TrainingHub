@@ -14,13 +14,14 @@ if (!isSource || isOutside) process.exit(0);
 
 const run = (args) => spawnSync("npx", args, { cwd: root, encoding: "utf8", timeout: 120_000 });
 const failures = [
-  ["ESLint", run(["eslint", "--max-warnings=0", file])],
+  ["ESLint", run(["eslint", "--max-warnings=0", "--no-warn-ignored", file])],
   ["Related unit tests", run(["vitest", "related", "--run", "--project", "unit", "--passWithNoTests", file])],
 ].filter(([, result]) => result.status !== 0);
 
 if (failures.length > 0) {
   for (const [name, result] of failures) {
-    console.error(`${name} failed for ${file}:\n${result.stdout}${result.stderr}`.trim());
+    const output = `${result.stdout ?? ""}${result.stderr ?? ""}${result.error?.message ?? ""}`;
+    console.error(`${name} failed for ${file}:\n${output}`.trim());
   }
   process.exit(2);
 }
