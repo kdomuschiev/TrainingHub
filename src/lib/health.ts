@@ -10,7 +10,9 @@ export async function checkHealth(
   try {
     await pingDatabase();
     return { status: "ok", database: "reachable" };
-  } catch {
+  } catch (error) {
+    // The message only: database errors can carry the connection details.
+    logFailure(error instanceof Error ? error.message : String(error));
     return { status: "error", database: "unreachable" };
   }
 }
