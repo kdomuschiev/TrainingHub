@@ -20,5 +20,16 @@ export function checkTestMarkers(files) {
 
 /** Rejects a deleted test file, or a test file with fewer tests than before. */
 export function checkTestCount(files) {
-  return [];
+  return files
+    .filter((file) => TEST_FILE.test(file.path) && file.before !== null)
+    .flatMap((file) => {
+      if (file.status === "D") return [`${file.path}: test file deleted`];
+      const before = countTests(file.before);
+      const after = countTests(file.after ?? "");
+      return after < before ? [`${file.path}: ${before} tests before, ${after} now`] : [];
+    });
+}
+
+function countTests(source) {
+  return source.match(/\b(?:it|test)(?:\.\w+)*\s*\(/g)?.length ?? 0;
 }
