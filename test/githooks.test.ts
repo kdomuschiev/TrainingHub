@@ -109,6 +109,19 @@ describe("checkTestCount", () => {
   });
 });
 
+describe("checkTestCount on renames", () => {
+  it("rejects a test file renamed to a name Vitest does not run", () => {
+    const tests = 'it("a", () => {});\n';
+    const renamed = staged("src/lib/health.fixture.ts", [], {
+      status: "R",
+      oldPath: "src/lib/health.test.ts",
+      before: tests,
+      after: tests,
+    });
+    expect(checkTestCount([renamed])).toEqual([expect.stringContaining("src/lib/health.test.ts")]);
+  });
+});
+
 describe("checkTodos", () => {
   const specs = new Set(["000", "003"]);
   const todo = marker("TO", "DO");
