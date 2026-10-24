@@ -191,12 +191,21 @@ Task-review findings the agent does not fix go to "Needs your decision".
 **D40 — The app map and end-to-end flow are decided in spec 001, before the visual direction.** (Q43)
 The `/spec 001` interview starts with the screens, navigation, start screen, and the flow after a run is uploaded (upload → processing → analysis → plan adjustment → in-app notice). The 001 mockup is a clickable prototype of the whole flow in the chosen visual direction. The approved map is recorded in `PRODUCT.md`; later specs detail their screens within it and never change it silently (a change is a question to the owner). Flow and visuals influence each other, so they are decided together with a mockup in front of the owner.
 
+## Decided in spec 000
+
+**D41 — Drizzle ORM + drizzle-kit, with the `pg` driver everywhere (local, CI, Neon).** (spec 000, T5)
+Schema in TypeScript, queries close to SQL, migrations as plain `.sql` files reviewable in the PR before production is migrated (D22). No generate step. One driver means integration tests exercise the production code path. Rejected: Prisma 7 (heavier, extra generate step, own schema language), Kysely with hand-written migrations (no schema or migration generation).
+
+**D42 — Error monitoring with Sentry's free plan (`@sentry/nextjs`).** (spec 000, T6)
+Server errors with stack traces and an email on the first occurrence of a new error, so a failed ingest does not go unnoticed. Rejected: Vercel runtime logs only (about an hour of retention on Hobby, no alerts).
+
+**D43 — Database backups: Neon's built-in restore window only.** (spec 000, T6)
+Owner's choice. Accepted risk: data older than the free-tier restore window cannot be recovered. Rejected: a weekly encrypted `pg_dump` as a GitHub Actions artifact (encryption would be mandatory because artifacts in a public repo are downloadable by any GitHub user).
+
 ## Open questions (decided in the named spec's interview)
 
 | Topic | Spec |
 |---|---|
-| ORM and migration tooling | 000 |
-| Error logging / monitoring; database backups | 000 |
 | Database schema; whether to store the raw `.fit` file | 003 |
 | How `.fit` test fixtures are anonymized (GPS tracks, timestamps, device IDs) before they are committed to the public repo | 003 |
 | Which FIT metrics are shown and passed to the coach | 003 / 006 |
