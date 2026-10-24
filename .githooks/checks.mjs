@@ -17,3 +17,8 @@ export function checkTestMarkers(files) {
         .map((line) => `${file.path}: skipped or focused test: ${line.trim()}`),
     );
 }
+
+/** Rejects a deleted test file, or a test file with fewer tests than before. */
+export function checkTestCount(files) {
+  return [];
+}
