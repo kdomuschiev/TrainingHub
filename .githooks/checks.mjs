@@ -79,5 +79,11 @@ export function checkGithub(files, branch, tiers) {
 
 /** The lines a one-file `git diff -U0` adds; headers before the first hunk are skipped. */
 export function addedLinesFromDiff(diff) {
-  return [];
+  const lines = diff.split("\n");
+  const firstHunk = lines.findIndex((line) => line.startsWith("@@"));
+  if (firstHunk === -1) return [];
+  return lines
+    .slice(firstHunk)
+    .filter((line) => line.startsWith("+"))
+    .map((line) => line.slice(1));
 }
