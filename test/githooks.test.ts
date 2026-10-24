@@ -36,6 +36,18 @@ describe("checkTestMarkers", () => {
       ]),
     ).toEqual([]);
   });
+
+  it("accepts the words fit and xit when they are not test calls", () => {
+    expect(
+      checkTestMarkers([
+        staged("src/lib/fit.test.ts", [
+          'import { fit } from "./fit";',
+          'it("reads a fit file", () => {});',
+          "// a fit, xit or fdescribe in prose",
+        ]),
+      ]),
+    ).toEqual([]);
+  });
 });
 
 describe("checkTestCount", () => {
