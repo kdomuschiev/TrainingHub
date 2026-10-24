@@ -1,0 +1,127 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.head_ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  statuses: read
+
+env:
+  NEON_PROJECT_ID: purple-cake-69863347
+  VERCEL_SCOPE: kdomuschievs-projects
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with: { node-version: 24, cache: npm }
+      - run: npm ci
+      - run: npm run lint
+
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with: { node-version: 24, cache: npm }
+      - run: npm ci
+      - run: npm run typecheck
+
+  unit:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with: { node-version: 24, cache: npm }
+      - run: npm ci
+      - run: npm test
+
+  # The Vercel preview deploy also creates the PR's Neon branch
+  # (preview/<git-branch>), so integration and E2E wait for it.
+  preview:
+    name: Wait for Vercel preview
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      url: ${{ steps.url.outputs.url }}
+    steps:
+      - name: Wait for the Vercel status on the PR head commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          while true; do
+            state=$(gh api "repos/$GITHUB_REPOSITORY/commits/$SHA/statuses" \
+              --jq '[.[] | select(.context == "Vercel")][0].state // "missing"')
+            echo "Vercel status: $state"
+            case "$state" in
+              success) break ;;
+              failure|error) echo "::error::Vercel preview deploy failed"; exit 1 ;;
+            esac
+            sleep 10
+          done
+      - name: Compute the branch preview URL
+        id: url
+        env:
+          BRANCH: ${{ github.head_ref }}
+        run: |
+          slug=$(echo "$BRANCH" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-|-$//g')
+          host="traininghub-git-${slug}-${VERCEL_SCOPE}"
+          # Vercel shortens hostnames over 63 characters with a hash we can't predict.
+          if [ ${#host} -gt 63 ]; then
+            echo "::error::Branch name too long for a predictable preview URL ($host). Use a shorter branch name."
+            exit 1
+          fi
+          echo "url=https://${host}.vercel.app" >> "$GITHUB_OUTPUT"
+
+  integration:
+    name: Integration tests
+    needs: preview
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with: { node-version: 24, cache: npm }
+      - run: npm ci
+      - name: Get the PR's Neon branch connection string
+        env:
+          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+          BRANCH: ${{ github.head_ref }}
+        run: |
+          url=$(npx -y neonctl@8.11.1 connection-string "preview/$BRANCH" \
+            --project-id "$NEON_PROJECT_ID" --database-name traininghub)
+          echo "::add-mask::$url"
+          echo "DATABASE_URL=$url" >> "$GITHUB_ENV"
+      - run: npm run test:integration
+
+  e2e:
+    name: E2E tests
+    needs: preview
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with: { node-version: 24, cache: npm }
+      - run: npm ci
+      - run: npx playwright install --with-deps webkit
+      - run: npm run test:e2e
+        env:
+          BASE_URL: ${{ needs.preview.outputs.url }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
