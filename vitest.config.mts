@@ -1,0 +1,25 @@
+import { defineConfig } from "vitest/config";
+
+export default defineConfig({
+  resolve: { tsconfigPaths: true },
+  test: {
+    setupFiles: ["./test/setup.ts"],
+    projects: [
+      {
+        extends: true,
+        test: {
+          name: "unit",
+          include: ["src/**/*.test.ts", "test/**/*.test.ts"],
+          exclude: ["**/*.int.test.ts"],
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: "integration",
+          include: ["src/**/*.int.test.ts", "test/**/*.int.test.ts"],
+        },
+      },
+    ],
+  },
+});
