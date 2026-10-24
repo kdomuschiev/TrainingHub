@@ -134,7 +134,8 @@ The retrospective (fresh session) reads transcripts, PR comments, observer and r
 **D29 — No plugins or marketplace for now.** (Q31)
 Everything lives in the repo's `.claude/` folder.
 
-**D30 — Project name `TrainingHub`, at `~/Projects/TrainingHub`, private GitHub repo with branch protection on `main`.** (Q32)
+**D30 — Project name `TrainingHub`, at `~/Projects/TrainingHub`, public GitHub repo with branch protection on `main`.** (Q32; changed from private in spec 000, T2)
+GitHub Free offers no branch protection, rulesets or auto-merge on private repos, and GitHub Pro ($4/month) was rejected in favor of zero infrastructure cost. Commits use the owner's GitHub noreply address. Nothing personal is committed: no secrets, and no unanonymized training data.
 
 **D31 — Git conventions.** (Q33)
 
@@ -197,6 +198,7 @@ The `/spec 001` interview starts with the screens, navigation, start screen, and
 | ORM and migration tooling | 000 |
 | Error logging / monitoring; database backups | 000 |
 | Database schema; whether to store the raw `.fit` file | 003 |
+| How `.fit` test fixtures are anonymized (GPS tracks, timestamps, device IDs) before they are committed to the public repo | 003 |
 | Which FIT metrics are shown and passed to the coach | 003 / 006 |
 | Coach prompts and personalities | 006 / 007 |
 | Health-data privacy: what is sent to the Claude API, account and data deletion | 002 / 006 |
