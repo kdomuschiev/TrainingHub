@@ -8,8 +8,9 @@ export type DbOptions = {
 };
 
 export function createDb(connectionString: string, options: DbOptions = {}) {
-  void options;
   const pool = new Pool({ connectionString, connectionTimeoutMillis: 5_000 });
+  // Neon drops idle connections; without a listener that error crashes the process.
+  pool.on("error", options.onPoolError ?? ((error) => console.error("Postgres pool error", error)));
   return drizzle({ client: pool, schema });
 }
 
