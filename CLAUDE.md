@@ -23,11 +23,12 @@
 - Once per PR, before calling the owner: `/code-review`, plus
   `/security-review` for high tier. Fix findings; list the
   rest under Needs your decision.
-- Advisor (high-tier specs only): before a decision the spec
-  doesn't settle (library, data shape, security approach),
-  ask a fresh Opus 5.5 subagent (effort medium) with the
-  options and context. Record the advice and your choice in
-  the progress file.
+- Advisor (high-tier specs only): before you recommend an
+  option on a decision the spec doesn't settle (library, data
+  shape, security approach), even one the owner makes, ask a
+  fresh Opus 5.5 subagent (effort medium) with the options and
+  context. Record the advice and the final choice in the
+  progress file.
 
 ## Hooks
 

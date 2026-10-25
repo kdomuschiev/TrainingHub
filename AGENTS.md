@@ -83,6 +83,10 @@ CI never call the real Claude API; use recorded responses.
 
 Keep going while the next step doesn't need the owner. When
 blocked, leave a status note with the next action in the progress file.
+When the owner must act in an external service (dashboard,
+account, settings), read its current docs first, then give
+numbered steps with the exact menu path, every name and value
+to enter, and what they will see when it worked.
 
 Do without asking:
 - Read and write code, run tests/lint/build inside the repo.
@@ -111,7 +115,8 @@ End every report to the owner with:
 
 **Needs your decision** — numbered Q1, Q2…, each with a
 recommended answer · **FYI** · **Progress** — % of the spec's
-tasks done · **New session:** yes/no — reason
+tasks done, plus any "Done means" items still open ·
+**New session:** yes/no — reason
 
 New session is yes when: the spec is finished (implementation
 always starts fresh), the same task failed twice or the owner
@@ -122,7 +127,7 @@ next task doesn't need the current context.
 
 `AGENTS.md`, `CLAUDE.md`, `REVIEW.md` and everything in
 `.claude/` (skills, agents, hooks, settings) change only after
-an interview with the owner: propose the wording, the owner
-approves it line by line. Retrospectives propose such changes;
+an interview with the owner: propose the full wording in one
+message, numbered by block; the owner approves it line by line. Retrospectives propose such changes;
 they never apply them. PRs touching these files are at least
 medium tier and never auto-merge.

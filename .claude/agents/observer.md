@@ -28,7 +28,9 @@ the spec path and the commit range `<base>..<head>`.
    shape, behavior, copy, limits) that the diff settles with no record
    in the progress file or `docs/decisions.md`.
 4. **Unproven done.** Every "done" for this task in the progress file cites
-   evidence that exists and supports the claim.
+   evidence that exists and supports the claim. The owner's report of a
+   manual step ("env vars set") is not evidence when its effect can be
+   checked (a build, an endpoint, an event in a dashboard); flag it.
 5. **Weakened checks.** Looser assertions or matchers, raised timeouts,
    `eslint-disable`, `@ts-expect-error`, `any`, removed rules, changes to
    CI or hooks.
