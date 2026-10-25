@@ -208,6 +208,7 @@ Owner's choice. Accepted risk: data older than the free-tier restore window cann
 - Node 24.x everywhere (`engines`, Vercel, CI).
 - `GET /api/health` returns `{status, database}`; 503 when the database is unreachable; `Cache-Control: no-store`.
 - Database: 5 s connect timeout and 5 s query timeout; pool errors are logged by message only (the error object carries the password).
+- Production URL: https://traininghub-sand.vercel.app (assigned by Vercel).
 - Sentry: no performance tracing (`tracesSampleRate: 0`) and no default PII (`sendDefaultPii: false`), because the app holds health data.
 - CI waits for the Vercel commit status, then uses the branch preview URL. Vercel shortens hostnames over 63 characters with an unpredictable hash, so a branch name may be at most 25 characters after slugging (`feat/s003-run-ingest` is 20); CI fails with a clear message otherwise.
 - E2E trades the Vercel bypass secret for a cookie scoped to the preview domain (global setup), so the secret never reaches other sites.
@@ -223,6 +224,14 @@ Owner's choice. Accepted risk: data older than the free-tier restore window cann
 
 **D47 — Agents never delete branches; GitHub deletes head branches on merge.** (after spec 000, owner instruction, Q35/Q38)
 The repo setting `delete_branch_on_merge` is on, so merged branches leave GitHub without any agent action. After a merge the agent only runs `git switch main && git pull --prune`. Supersedes the "delete branches" part of D22's "never without an explicit yes" row: deleting a branch is now never. Merged local branches stay on the owner's machine; they are harmless.
+
+**D48 — Rules from the spec 000 retrospective.** (retrospective, Q1–Q10)
+- The observer flags a "done" that rests only on the owner's report of a manual step when its effect can be checked, and a service a task turns on that no "Done means" item proves in production. The first production build ran without Sentry variables while T6 said "env vars done"; Sentry was chosen in T6, after the spec was written.
+- Every service a spec turns on gets a "Done means" item proving it works in production (`/spec`). Spec 000 chose Sentry in T6, and no item covered it.
+- Before owner steps in an external service, the agent reads the service's current docs and gives exact steps plus what success looks like. About 10 follow-up questions came from steps written from memory, two of them wrong.
+- The advisor also checks the agent's recommendation when the owner decides during implementation; spec interviews still have no advisor (D23). It never ran in spec 000, because every unsettled decision went straight to the owner.
+- Reports list open "Done means" items next to task progress. Amends D22's report format.
+- Interviews on agent instruction files show the full proposed wording in one message, numbered by block; the owner approves each block or edits lines in it. Amends D37's "approves line by line". Most spec 000 edits came at the full read.
 
 ## Open questions (decided in the named spec's interview)
 
