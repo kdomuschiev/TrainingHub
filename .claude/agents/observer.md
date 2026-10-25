@@ -26,7 +26,9 @@ the spec path and the commit range `<base>..<head>`.
    finding, unless it falls under an exception in `AGENTS.md`.
 3. **Silent decisions.** A choice the spec leaves open (library, data
    shape, behavior, copy, limits) that the diff settles with no record
-   in the progress file or `docs/decisions.md`.
+   in the progress file or `docs/decisions.md`. A service the task turns
+   on that no "Done means" item proves in production is a finding; the
+   fix is a check for it in the progress file.
 4. **Unproven done.** Every "done" for this task in the progress file cites
    evidence that exists and supports the claim. The owner's report of a
    manual step ("env vars set") is not evidence when its effect can be

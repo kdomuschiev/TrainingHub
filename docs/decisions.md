@@ -226,12 +226,12 @@ Owner's choice. Accepted risk: data older than the free-tier restore window cann
 The repo setting `delete_branch_on_merge` is on, so merged branches leave GitHub without any agent action. After a merge the agent only runs `git switch main && git pull --prune`. Supersedes the "delete branches" part of D22's "never without an explicit yes" row: deleting a branch is now never. Merged local branches stay on the owner's machine; they are harmless.
 
 **D48 — Rules from the spec 000 retrospective.** (retrospective, Q1–Q6)
-- The observer flags a "done" that rests only on the owner's report of a manual step when its effect can be checked. The first production build ran without Sentry variables while T6 said "env vars done".
+- The observer flags a "done" that rests only on the owner's report of a manual step when its effect can be checked, and a service a task turns on that no "Done means" item proves in production. The first production build ran without Sentry variables while T6 said "env vars done"; Sentry was chosen in T6, after the spec was written.
 - Every service a spec turns on gets a "Done means" item proving it works in production (`/spec`). Spec 000 chose Sentry in T6, and no item covered it.
 - Before owner steps in an external service, the agent reads the service's current docs and gives exact steps plus what success looks like. About 10 follow-up questions came from steps written from memory, two of them wrong.
-- The advisor also checks the agent's recommendation when the owner decides. It never ran in spec 000, because every unsettled decision went straight to the owner.
+- The advisor also checks the agent's recommendation when the owner decides during implementation; spec interviews still have no advisor (D23). It never ran in spec 000, because every unsettled decision went straight to the owner.
 - Reports list open "Done means" items next to task progress. Amends D22's report format.
-- Interviews on agent instruction files show the full proposed wording in one message, numbered by block; line-by-line approval stays. Amends D37's interview step. Most spec 000 edits came at the full read.
+- Interviews on agent instruction files show the full proposed wording in one message, numbered by block; the owner approves each block or edits lines in it. Amends D37's "approves line by line". Most spec 000 edits came at the full read.
 
 ## Open questions (decided in the named spec's interview)
 
