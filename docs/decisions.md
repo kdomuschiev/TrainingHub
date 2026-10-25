@@ -230,8 +230,8 @@ The repo setting `delete_branch_on_merge` is on, so merged branches leave GitHub
 - Every service a spec turns on gets a "Done means" item proving it works in production (`/spec`). Spec 000 chose Sentry in T6, and no item covered it.
 - Before owner steps in an external service, the agent reads the service's current docs and gives exact steps plus what success looks like. About 10 follow-up questions came from steps written from memory, two of them wrong.
 - The advisor also checks the agent's recommendation when the owner decides. It never ran in spec 000, because every unsettled decision went straight to the owner.
-- Reports list open "Done means" items next to task progress.
-- Interviews on agent instruction files show the full proposed wording in one message, numbered by block; line-by-line approval (D37) stays. Most spec 000 edits came at the full read.
+- Reports list open "Done means" items next to task progress. Amends D22's report format.
+- Interviews on agent instruction files show the full proposed wording in one message, numbered by block; line-by-line approval stays. Amends D37's interview step. Most spec 000 edits came at the full read.
 
 ## Open questions (decided in the named spec's interview)
 

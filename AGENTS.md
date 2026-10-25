@@ -128,6 +128,7 @@ next task doesn't need the current context.
 `AGENTS.md`, `CLAUDE.md`, `REVIEW.md` and everything in
 `.claude/` (skills, agents, hooks, settings) change only after
 an interview with the owner: propose the full wording in one
-message, numbered by block; the owner approves it line by line. Retrospectives propose such changes;
-they never apply them. PRs touching these files are at least
-medium tier and never auto-merge.
+message, numbered by block; the owner approves it line by
+line. Retrospectives propose such changes; they never apply
+them. PRs touching these files are at least medium tier and
+never auto-merge.

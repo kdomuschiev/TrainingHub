@@ -55,11 +55,11 @@ Write `specs/<nnn>-<name>.md` in the structure of
 `specs/000-foundation.md`: header table, Goal, Done means, Tasks,
 Out of scope, When to stop and ask. Each "Done means" item is
 checkable by a command, a test, or an owner look at a named mockup
-state. Every service or integration the spec turns on gets an item that
-proves it works in production: an event received or a request
-answered, not a variable set. Number tasks T1…Tn in build order, each small enough for one
-task review. "When to stop and ask" lists only what this spec adds
-to the Autonomy section of `AGENTS.md`.
+state. Every service or integration the spec turns on gets an item
+that proves it works in production: an event received or a request
+answered, not a variable set. Number tasks T1…Tn in build order,
+each small enough for one task review. "When to stop and ask" lists
+only what this spec adds to the Autonomy section of `AGENTS.md`.
 
 In the same change: each new decision goes into `docs/decisions.md`
 as the next D-number with its reason; answered rows leave the
